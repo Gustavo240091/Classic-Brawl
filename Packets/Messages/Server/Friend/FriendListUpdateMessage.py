@@ -12,7 +12,7 @@ class FriendListUpdateMessage(Writer):
         self.writeVint(1)
 
         self.writeInt(0)  # HighID
-        self.writeInt(1)  # LowID
+        self.writeInt(3)  # LowID
 
         self.writeString()
         self.writeString()
