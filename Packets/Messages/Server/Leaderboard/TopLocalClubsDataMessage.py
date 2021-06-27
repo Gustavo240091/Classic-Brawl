@@ -11,10 +11,11 @@ class GetLeaderboardClubLocalOkMessage(Writer):
         self.type = type
 
     def encode(self):
+        self.indexOfClub = 0
         self.writeVint(2)
         self.writeVint(0)
         self.writeVint(0)
-        self.writeString("RO") # Player Region
+        self.writeString(self.player.region) # Player Region
 
         DataBase.CountClub(self, 1, 100, 2, 200)
 
@@ -26,6 +27,8 @@ class GetLeaderboardClubLocalOkMessage(Writer):
         self.club_data.sort(key=by_trophy, reverse=True)
 
         for club in self.club_data:
+            if club["clubID"] == self.player.club_low_id:
+                self.indexOfClub = self.club_data.index(club) + 1
             DataBase.loadClub(self, club['clubID'])
             self.writeVint(0)  # Club High ID
             self.writeVint(club['clubID'])  # Club Low ID
@@ -42,17 +45,7 @@ class GetLeaderboardClubLocalOkMessage(Writer):
 
 
         self.writeVint(0)
-        
-        check = False
-        for club in self.club_data:
-            if self.player.club_low_id == club['clubID']:
-                self.writeVint(self.club_data.index(club) + 1)
-                check = True
-                
-        if not check:
-            self.writeVint(0)
-            
+        self.writeVint(self.indexOfClub) # Index of the club
         self.writeVint(0)
         self.writeVint(0)
-
-        self.writeString("RO")
+        self.writeString(self.player.region)

@@ -11,46 +11,40 @@ class GetLeaderboardGlobalOkMessage(Writer):
         self.players = players
 
     def encode(self):
+        self.indexOfPlayer = 1
         self.writeBoolean(True)
         self.writeVint(0)
         self.writeVint(0)
         self.writeString()
 
-
         self.writeVint(len(self.players)) # Players Count
 
         for player in self.players:
-
-
+            if player["lowID"] == self.player.low_id:
+                self.indexOfPlayer = self.players.index(player) + 1
             self.writeVint(0) # High ID
-            self.writeVint(player['lowID']) # Low ID
-            
+            self.writeVint(player["lowID"]) # Low ID
+
             self.writeVint(1)
             self.writeVint(player['trophies']) # Player Trophies
 
             self.writeVint(1)
 
-            self.writeString() # Club Name
+            if player["clubID"] != 0:
+                DataBase.loadClub(self, player["clubID"])
+                self.writeString(self.clubName)
+            else:
+                self.writeString()
+                
             self.writeString(player['name']) # Player Name
-
-            self.writeVint(1) # Player Level
+            self.writeVint(player['playerExp']) # Player Level
             self.writeVint(28000000 + player['profileIcon'])
             self.writeVint(43000000 + player['namecolor'])
             self.writeVint(0)
 
 
         self.writeVint(0)
-        
-        check = False
-        for player in self.players:
-            if self.player.low_id == player['lowID']:
-                self.writeVint(self.players.index(player) + 1)
-                check = True
-                
-        if not check:
-            self.writeVint(0)
-            
+        self.writeVint(self.indexOfPlayer)
         self.writeVint(0)
-        self.writeVint(0)
-
-        self.writeString("RO")
+        self.writeVint(0) # Leaderboard global TID
+        self.writeString(self.player.region)
