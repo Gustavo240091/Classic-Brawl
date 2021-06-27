@@ -1,6 +1,7 @@
 from Logic.Player import Players
 from os import SEEK_CUR, curdir
 from Utils.Writer import Writer
+from Utils.Helpers import Helpers
 from Database.DatabaseManager import DataBase
 import json
 
@@ -57,12 +58,12 @@ class AllianceDataMessage(Writer):
             self.writeInt(0)                                    # High Id
             self.writeInt(id)                      # Low Id
 
-            self.writeVint(self.plrrole)                        # player club role | 0 = Nothing, 1 = Member, 2 = President, 3 = Senior, 4 = Vice President
-            self.writeVint(self.plrtrophies)                    # trophies
-            self.writeVint(2)                                   # Player states | 0 = last online 1 hour ago, 1 = battling, 2 = menu, 4 = matchmaking, 6 = last online 1 month ago, 7 = spectating, 8 = practicing
-            self.writeVint(0)
+            self.writeVint(self.plrrole)             # player club role | 0 = Nothing, 1 = Member, 2 = President, 3 = Senior, 4 = Vice President
+            self.writeVint(self.plrtrophies)         # trophies
+            self.writeVint(2)                        # Player states | 0 = last online 1 hour ago, 1 = battling, 2 = menu, 4 = matchmaking, 6 = last online 1 month ago, 7 = spectating, 8 = practicing
+            self.writeVint(0)                        # Player states Timer
             self.writeVint(0)
             self.writeString(self.plrname)
-            self.writeVint(100)
+            self.writeVint(self.plrexperience)
             self.writeVint(28000000 + self.plricon)
             self.writeVint(43000000 + self.plrnamecolor)
