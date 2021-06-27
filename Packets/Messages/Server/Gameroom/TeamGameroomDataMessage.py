@@ -7,12 +7,18 @@ class TeamGameroomDataMessage(Writer):
         super().__init__(client)
         self.id = 24124
         self.player = player
-        self.playerCount = 2
+        self.playerCount = 1
 
     def encode(self):
+        brawler_trophies = self.player.brawlers_trophies[str(self.player.brawler_id)]
+        brawler_trophies_for_rank = self.player.brawlers_trophies_in_rank[str(self.player.brawler_id)]
+        if self.player.Brawler_starPower[str(self.player.brawler_id)] >= 1:
+            brawler_level = self.player.Brawler_level[str(self.player.brawler_id)] + 2
+        else:
+            brawler_level = self.player.Brawler_level[str(self.player.brawler_id)] + 1
         DataBase.loadGameroom(self)
         if self.player.room_id != 0:
-            self.writeVint(1)
+            self.writeVint(1) #mode
             self.writeVint(0)
             self.writeVint(1)
             self.writeVint(0)
@@ -37,11 +43,11 @@ class TeamGameroomDataMessage(Writer):
                 self.writeInt(0)                                      # HighID
                 self.writeInt(int(self.playersdata[player]["LowID"]))         # LowID
 
-                self.writeScId(16, self.playersdata[player]["brawlerID"])             # BrawlerID
-                self.writeVint(0)                                    #
-                self.writeVint(99999)                                    # Unknown
-                self.writeVint(99999)                                    # Unknown
-                self.writeVint(10)                                   # Power level
+                self.writeScId(16, self.player.brawler_id)
+                self.writeScId(29, self.player.skin_id)
+                self.writeVint(brawler_trophies)
+                self.writeVint(brawler_trophies_for_rank)
+                self.writeVint(brawler_level)
 
                 self.writeVint(3)                                   # Player State | 11: Events, 10: Brawlers, 9: Writing..., 8: Training, 7: Spectactor, 6: Offline, 5: End Combat Screen, 4: Searching, 3: Not Ready, 2: AFK, 1: In Combat, 0: OffLine
                 self.writeVint(self.playersdata[player]["Ready"])    # Is ready
@@ -53,9 +59,13 @@ class TeamGameroomDataMessage(Writer):
                 self.writeVint(100)
                 self.writeVint(28000000 + self.playersdata[player]["profileIcon"])  # Player icon
                 self.writeVint(43000000 + self.playersdata[player]["namecolor"])    # Player name color
-
-                self.writeScId(23, self.playersdata[player]["starpower"])       # Starpower
-                self.writeScId(23, self.playersdata[player]["gadget"])          # Gadget                                        # Gadget
+                
+                if self.useGadget:
+                    self.writeScId(23, self.playersdata[player]["starpower"])       # Starpower
+                    self.writeScId(23, self.playersdata[player]["gadget"])          # Gadget
+                else:
+                    self.writeScId(23, self.playersdata[player]["starpower"])       # Starpower
+                    self.writeVint(0)                                            # Gadget
 
             self.writeVint(0)
             self.writeVint(0)
@@ -66,3 +76,4 @@ class TeamGameroomDataMessage(Writer):
                 self.writeVint(2)
         else:
             print(self.player.room_id)
+            self.writeBoolean(False) # Club Wars Text ?
