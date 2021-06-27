@@ -4,6 +4,7 @@ from Files.CsvLogic.Cards import Cards
 from datetime import datetime
 
 from Utils.Writer import Writer
+from Utils.Helpers import Helpers
 from Database.DatabaseManager import DataBase
 
 from Logic.Shop import Shop
@@ -19,21 +20,21 @@ class OwnHomeDataMessage(Writer):
 
     def encode(self):
         DataBase.loadAccount(self)
-
-        self.writeVint(0)
-        self.writeVint(int(datetime.timestamp(datetime.now())))  # Timestamp
+        
+        self.writeVint(9999)
+        self.writeVint(124670)  # Timestamp
 
         self.writeVint(self.player.trophies)  # Player Trophies
         self.writeVint(self.player.highest_trophies)  # Player Max Reached Trophies
 
-        self.writeVint(0)
-        self.writeVint(95)  # Trophy Road Reward
+        self.writeVint(6)
+        self.writeVint(self.player.trophy_road)  # Trophy Road Reward
 
-        self.writeVint(99999)  # Player exp set to high number because of the name and bot battle level restriction
+        self.writeVint(1262470)  # Player exp set to high number because of the name and bot battle level restriction
 
         self.writeScId(28, self.player.profile_icon)  # Player Icon ID
         self.writeScId(43, self.player.name_color)  # Player Name Color ID
-
+        
         self.writeVint(0)  # array
 
         # Selected Skins array
@@ -46,96 +47,106 @@ class OwnHomeDataMessage(Writer):
         self.writeVint(len(self.player.skins_id))
         for skin_id in self.player.skins_id:
             self.writeScId(29, skin_id)
-
+            
         self.writeVint(0)  # array
-
+            
         self.writeVint(0)
+        self.writeVint(122)
         self.writeVint(0)
-        self.writeVint(0)
-
-        self.writeBoolean(False)  # "token limit reached message" if true
         self.writeVint(1)
-        self.writeBoolean(True)
-
-        self.writeVint(self.player.tokensdoubler)  # Token doubler ammount
-        self.writeVint(0)  # Season End Timer
-        self.writeVint(0)
-        self.writeVint(0)
-
-        self.writeVint(0)
-        self.writeVint(0)
-        self.writeVint(0)  # array
-
-        self.writeByte(8)  # related to shop token doubler
 
         self.writeBoolean(True)
-        self.writeBoolean(True)
-        self.writeBoolean(True)
-
+        
+        self.writeVint(self.player.tokensdoubler) # Remaining Tokens Doubler
+        self.writeVint(Helpers.LeaderboardTimer(self))  # Trophy League Season Timer
         self.writeVint(0)
+        self.writeVint(Helpers.LeaderboardTimer(self)) # Brawl Pass Season Timer
+        
         self.writeVint(0)
+        self.writeBoolean(True)
+        
+        # Unknown Array
+        self.writeBoolean(True)
+        self.writeVint(0)
+        # Unknown Array End
 
-        # Shop Offers array
+        self.writeByte(4)  # Shop Token Doubler Related
+        self.writeVint(2)
+        self.writeVint(2)
+        self.writeVint(2)
+        
+        self.writeVint(0) # Change Name Cost in Gems
+        self.writeVint(0) # Timer For The Next Name Change
 
-        count = len(Shop.offers)
-
-        self.writeVint(count)
-        for i in range(count):
-            item = Shop.offers[i]
-
-            self.writeVint(1)
-
-            self.writeVint(item['ID'])
-            self.writeVint(item['Multiplier'])
+        # Shop Array
+        Shop.EncodeShopOffers(self)
+        # Shop Array End
+        
+        # Brawl Box Ads Array
+        self.writeVint(1)
+        for x in range (1):
             self.writeVint(0)
-            self.writeVint(item['SkinID'])
-            self.writeVint(item['ShopType'])  # [0 = Offer, 2 = Skins 3 = Star Shop]
-
-            self.writeVint(item['Cost'])  # Cost
-            self.writeVint(item['Timer'])
-
-            self.writeVint(1)
-            self.writeVint(100)
-            self.writeBoolean(False)  # is Offer Purchased
-
-            self.writeBoolean(False)
-            self.writeVint(item['ShopDisplay'])  # [0 = Normal, 1 = Daily Deals]
-            self.writeBoolean(False)
             self.writeVint(0)
+            self.writeVint(10)
+        # Brawl Box Ads Array End
 
-            self.writeInt(0)
-
-            self.write_string_reference(item['OfferTitle'])
-
-            self.writeBoolean(False)
-            self.writeString()
-            self.writeVint(0)
-            self.writeBoolean(False)
-
-        self.writeVint(0)  # array
-
-        self.writeVint(200)
+        self.writeVint(self.player.battle_tokens) # Battle tokens
         self.writeVint(0)  # Time till Bonus Tokens (seconds)
 
-        self.writeVint(0)  # array
+        # Unknown Array
+        self.writeVint(0) # Count
+        for x in range(0):
+            self.writeVint(x)
+        # Unknown Array End
 
         self.writeVint(self.player.tickets)  # Tickets
         self.writeVint(0)
-
-        self.writeScId(16, self.player.brawler_id)  # Selected Brawler
-
+        
+        self.writeScId(16, self.player.brawler_id) # Selected Brawler
+        
         self.writeString(self.player.region)  # Location
-        self.writeString("Classic Brawl")  # Supported Content Creator
+        self.writeString(self.player.content_creator)  # Supported Content Creator
+        
+        # Unknown Array
+        self.writeVint(0) # Count
+        for x in range(0):
+            self.writeInt(0)
+            self.writeInt(0)
+        # Unknown Array End
+            
+        # Unknown Array
+        self.writeVint(0)
+        for x in range(0):
+            self.writeVint(0)
+            self.writeScId(0, 0)
+            self.writeVint(0)
+        # Unknown Array End
 
-        self.writeVint(0)  # array
-        self.writeVint(0)  # array
-        self.writeVint(0)  # array
-        self.writeVint(0)  # array
+        self.writeVint(1)
+        for x in range(1):
+            self.writeVint(0) 
+            self.writeVint(self.player.pass_tokens) # Brawl Pass Tokens
 
-        self.writeBoolean(False)
+            self.writeVint(self.player.pass_level) # Brawl Pass level completed
+            self.writeVint(self.player.pass_rewards) # Brawl Pass Rewards Taken
 
+            self.writeBoolean(True)  # Brawl Pass Purchased
+
+            self.writeVint(0)
+
+
+        self.writeVint(0)
+        for x in range(0):
+            pass
+        
+        self.writeBoolean(True)
+        self.writeVint(0)
+
+        self.writeBoolean(True)
+        self.writeVint(0)
+
+        #region Home
         self.writeVint(2019049)
-
         self.writeVint(100)
         self.writeVint(10)
 
@@ -145,15 +156,14 @@ class OwnHomeDataMessage(Writer):
 
         self.writeVint(Shop.token_doubler['Cost'])
         self.writeVint(Shop.token_doubler['Amount'])
-
-        self.writeVint(500)
-        self.writeVint(50)
+        
+        self.writeVint(550)
+        self.writeVint(0)
         self.writeVint(999900)
 
         self.writeVint(0)  # array
-
-        self.writeVint(8)  # array
-
+        
+        self.writeVint(8)  # Event slot count
         for i in range(8):
             self.writeVint(i)
 
@@ -166,9 +176,9 @@ class OwnHomeDataMessage(Writer):
             self.writeVint(EventSlots.maps.index(map) + 1)
             self.writeVint(EventSlots.maps.index(map) + 1)
             self.writeVint(map['Ended'])  # IsActive | 0 = Active, 1 = Disabled
-            self.writeVint(EventSlots.Timer)  # Timer
+            self.writeVint(Helpers.EventTimer(self))  # Timer
 
-            self.writeVint(0)
+            self.writeVint(map['Tokens'])
             self.writeScId(15, map['ID'])
 
             self.writeVint(map['Status'])
@@ -176,7 +186,7 @@ class OwnHomeDataMessage(Writer):
             self.writeString()
             self.writeVint(0)
             self.writeVint(0)  # Powerplay game played
-            self.writeVint(0)  # Powerplay game left maximum
+            self.writeVint(3)  # Powerplay game left maximum
 
             if map['Modifier'] > 0:
                 self.writeBoolean(True)  # Gamemodifier boolean
@@ -185,12 +195,11 @@ class OwnHomeDataMessage(Writer):
                 self.writeBoolean(False)
 
             self.writeVint(0)
-            self.writeVint(0)
+            self.writeVint(0) # Championship Array?
 
-        self.writeVint(0)  # array
-
+        self.writeVint(0)
+        
         # Logic Shop
-
         self.writeVint(8)
         for i in [20, 35, 75, 140, 290, 480, 800, 1250]:
             self.writeVint(i)
@@ -215,12 +224,13 @@ class OwnHomeDataMessage(Writer):
         for item in Shop.gold:
             self.writeVint(item['Amount'])
 
-        self.writeVint(2)  # array
-        self.writeVint(200)  # Max Tokens
-        self.writeVint(20)  # Plus Tokens
+
+        self.writeVint(0)    # array
+        self.writeVint(200)  # Max battle tokens
+        self.writeVint(20)   # Battle tokens refresh new ammount
 
         self.writeVint(8640)
-        self.writeVint(10)
+        self.writeVint(10) # Big Box Tokens
         self.writeVint(5)
 
         self.writeVint(6)
@@ -230,16 +240,23 @@ class OwnHomeDataMessage(Writer):
 
         self.writeBoolean(True)  # Box boolean
 
-        self.writeVint(0)  # array
+        self.writeBoolean(True)  # array
+        self.writeScId(1, 0)
+        self.writeInt(0)
+        self.writeInt(0)
 
-        self.writeVint(1)  # Menu Theme
+        self.writeVint(1)  # Menu Theme Array
         self.writeInt(1)
-        self.writeInt(41000011)  # Theme ID
+        self.writeInt(self.player.theme_id)
 
-        self.writeVint(0)  # array
+        self.writeBoolean(True)  # Unknown Array
+        self.writeVint(0)
+        self.writeVint(0)
+        self.writeVint(0)
+        self.writeVint(0)
 
-        self.writeInt(self.player.high_id)
-        self.writeInt(self.player.low_id)
+        self.writeInt(0)
+        self.writeInt(1)
 
         self.writeVint(0)  # array
 
@@ -253,11 +270,11 @@ class OwnHomeDataMessage(Writer):
         self.writeVint(self.player.high_id)  # High Id
         self.writeVint(self.player.low_id)  # Low Id
 
-        self.writeVint(0)
-        self.writeVint(0)
+        self.writeVint(self.player.high_id)  # High Id
+        self.writeVint(self.player.low_id)  # Low Id
 
-        self.writeVint(0)
-        self.writeVint(0)
+        self.writeVint(self.player.high_id)  # High Id
+        self.writeVint(self.player.low_id)  # Low Id
 
         if self.player.name == "Guest":
             self.writeString("Guest")  # Player Name
@@ -289,21 +306,18 @@ class OwnHomeDataMessage(Writer):
                 index += 2
             else:
                 index += 1
+            
 
-        self.writeVint(5)  # csv id
-        self.writeVint(1)  # resource id
+        self.writeScId(5, 1)  # Resource ID
         self.writeVint(self.player.brawl_boxes)  # resource amount
 
-        self.writeVint(5)  # csv id
-        self.writeVint(8)  # resource id
+        self.writeScId(5, 8)  # Resource ID
         self.writeVint(self.player.gold)  # resource amount
 
-        self.writeVint(5)  # csv id
-        self.writeVint(9)  # resource id
+        self.writeScId(5, 9)  # Resource ID
         self.writeVint(self.player.big_boxes)  # resource amount
-
-        self.writeVint(5)  # csv id
-        self.writeVint(10)  # resource id
+        
+        self.writeScId(5, 10)  # Resource ID
         self.writeVint(self.player.star_points)  # resource amount
 
         # Brawlers Trophies array
@@ -354,11 +368,19 @@ class OwnHomeDataMessage(Writer):
                 self.writeVint(0)
 
         # "new" Brawler Tag array
-        self.writeVint(0)  # brawlers count
+        self.writeVint(len(self.player.brawlers_id))  # brawlers count
+
+        for brawler_id in self.player.brawlers_id:
+            self.writeScId(16, brawler_id)
+            self.writeVint(self.player.Brawler_newTag[str(brawler_id)])
 
         self.writeVint(self.player.gems)  # Player Gems
-        self.writeVint(self.player.gems)
-        self.writeVint(1)
+        self.writeVint(self.player.gems)  # Player Gems
+        if self.player.player_experience < 40:
+            self.writeVint(0) # Tips Related
+        else:
+            self.writeVint(40) # Tips Related
+        self.writeVint(self.player.player_experience) # Unknown
         self.writeVint(0)
         self.writeVint(0)
         self.writeVint(0)
@@ -366,6 +388,5 @@ class OwnHomeDataMessage(Writer):
         self.writeVint(0)
         self.writeVint(0)
         self.writeVint(0)
-        self.writeVint(0)
-        self.writeVint(2)
+        self.writeVint(self.player.tutorial) # Tutorial State
         self.writeVint(1585502369)
