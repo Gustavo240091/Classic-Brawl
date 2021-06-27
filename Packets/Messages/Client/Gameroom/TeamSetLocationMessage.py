@@ -13,6 +13,8 @@ class TeamSetLocationMessage(BSMessageReader):
         self.read_Vint()
         self.player.map_id = self.read_Vint()
 
+
     def process(self):
+        print(self.player.map_id)
         DataBase.replaceGameroomValue(self, 'mapID', self.player.map_id, "room")
         TeamGameroomDataMessage(self.client, self.player).send()
