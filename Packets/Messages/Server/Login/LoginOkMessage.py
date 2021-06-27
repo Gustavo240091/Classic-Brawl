@@ -1,7 +1,6 @@
 import time
 
 from Utils.Writer import Writer
-from Database.DatabaseManager import DataBase
 
 
 class LoginOkMessage(Writer):
@@ -12,7 +11,6 @@ class LoginOkMessage(Writer):
         self.version = 1
 
     def encode(self):
-        DataBase.loadAccount(self)
         # Account ID
         self.writeInt(self.player.high_id)
         self.writeInt(self.player.low_id)
@@ -29,7 +27,7 @@ class LoginOkMessage(Writer):
         self.writeInt(165)  # Build
         self.writeInt(1)    # Minor Version
 
-        self.writeString(self.player.env)  # Environment
+        self.writeString("dev")  # Environment
 
         self.writeInt(0)  # Session Count
         self.writeInt(0)  # Play Time Seconds
@@ -43,7 +41,7 @@ class LoginOkMessage(Writer):
 
         self.writeString()
 
-        self.writeString(self.player.region) # Region
+        self.writeString("RU") # Region
         self.writeString()
 
         self.writeInt(1)
