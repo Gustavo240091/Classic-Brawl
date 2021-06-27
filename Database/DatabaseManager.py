@@ -16,7 +16,11 @@ class DataBase:
             self.player.FacebookID = user_data[0]["info"]["facebookID"]
             self.player.club_low_id = user_data[0]["info"]["clubID"]
             self.player.club_role = user_data[0]["info"]["clubRole"]
+            self.player.tutorial = user_data[0]["info"]["tutorial"]
+            self.player.trophy_road = user_data[0]["info"]["leagueReward"]
             self.player.player_experience = user_data[0]["info"]["playerExp"]
+            self.player.collected_experience = user_data[0]["info"]["cappedExp"]
+            self.player.maximum_experience = user_data[0]["info"]["MaximumExp"]
             self.player.solo_wins = user_data[0]["info"]["soloWins"]
             self.player.duo_wins = user_data[0]["info"]["duoWins"]
             self.player.ThreeVSThree_wins = user_data[0]["info"]["3vs3Wins"]
@@ -25,7 +29,10 @@ class DataBase:
             self.player.star_points = user_data[0]["info"]["starpoints"]
             self.player.tickets = user_data[0]["info"]["tickets"]
             self.player.tokensdoubler = user_data[0]["info"]["tokensdoubler"]
-            self.player.player_tokens = user_data[0]["info"]["playerTokens"]
+            self.player.battle_tokens = user_data[0]["info"]["availableTokens"]
+            self.player.pass_tokens = user_data[0]["info"]["PassTokens"]
+            self.player.pass_rewards = user_data[0]["info"]["PassRewards"]
+            self.player.pass_level = user_data[0]["info"]["PassLevel"]
             self.player.brawler_id = user_data[0]["info"]["brawlerID"]
             self.player.skin_id = user_data[0]["info"]["skinID"]
             self.player.profile_icon = user_data[0]["info"]["profileIcon"]
@@ -40,6 +47,8 @@ class DataBase:
             self.player.brawlers_trophies_in_rank = user_data[0]["info"]["brawlersTrophiesForRank"]
             self.player.brawlers_upgradium = user_data[0]["info"]["brawlersUpgradePoints"]
             self.player.Brawler_level = user_data[0]["info"]["brawlerPowerLevel"]
+            self.player.Brawler_starPower = user_data[0]["info"]["brawlerStarPower"]
+            self.player.Brawler_newTag = user_data[0]["info"]["brawlerNewTag"]
             self.player.brawlers_trophies = user_data[0]["info"]["brawlersTrophies"]
 
             if self.player.UnlockType == "Off":
@@ -73,7 +82,11 @@ class DataBase:
                     "clubRole": 0,
                     "isFBLinked": 0,
                     "facebookID": self.player.FacebookID,
+                    "tutorial": self.player.tutorial,
+                    "leagueReward": self.player.trophy_road,
                     "playerExp": self.player.player_experience,
+                    "cappedExp": self.player.collected_experience,
+                    "MaximumExp": self.player.maximum_experience,
                     "soloWins": self.player.solo_wins,
                     "duoWins": self.player.duo_wins,
                     "3vs3Wins": self.player.ThreeVSThree_wins,
@@ -81,7 +94,10 @@ class DataBase:
                     "gold": self.player.gold,
                     "starpoints": self.player.star_points,
                     "tokensdoubler": self.player.tokensdoubler,
-                    "playerTokens": self.player.player_tokens,
+                    "availableTokens": self.player.battle_tokens,
+                    "PassTokens": self.player.pass_tokens,
+                    "PassRewards": self.player.pass_rewards,
+                    "PassLevel": self.player.pass_level,
                     "tickets": self.player.tickets,
                     "brawlerID": 0,
                     "skinID": 0,
@@ -100,6 +116,8 @@ class DataBase:
                     "brawlersTrophiesForRank": self.player.brawlers_trophies_in_rank,
                     "brawlersUpgradePoints": self.player.brawlers_upgradium,
                     "brawlerPowerLevel": self.player.Brawler_level,
+                    "brawlerStarPower": self.player.Brawler_starPower,
+                    "brawlerNewTag": self.player.Brawler_newTag,
                     "UnlockedBrawlers": self.player.BrawlersUnlockedState
                 }
         }
@@ -341,27 +359,26 @@ class DataBase:
         query = Query()
         try:
             self.players = DataBase.getAllPlayers(self)
-            print(self.players[0])
             for i in range(len(self.players)):
                 if self.players[i]['lowID'] == int(Low_id):
-                    print(self.players[i])
                     self.lowplrid = self.players[i]['lowID']
                     self.plrrole = self.players[i]["clubRole"]
                     self.plrtrophies = self.players[i]["trophies"]
                     self.plrname = self.players[i]["name"]
                     self.plricon = self.players[i]["profileIcon"]
                     self.plrnamecolor = self.players[i]["namecolor"]
+                    self.plrexperience = self.players[i]["playerExp"]
                     break
 
 
         except Exception as e:
-            print(e)
             self.lowplrid = 1
             self.plrrole = 2
             self.plrtrophies = 0
             self.plrname = "Bot"
             self.plricon = 1
             self.plrnamecolor = 2
+            self.plrexperience = 0
 
     def replaceClubValue(self, target, inf1, inf2, inf3, inf4, inf5):
         db = TinyDB('Database/Club/club.db')
