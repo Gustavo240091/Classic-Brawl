@@ -2,7 +2,7 @@ from Database.DatabaseManager import DataBase
 
 from Utils.Reader import BSMessageReader
 
-class Upgrade_Brawler(BSMessageReader):
+class LogicRemoveNewTagBrawler(BSMessageReader):
     def __init__(self, client, player, initial_bytes):
         super().__init__(initial_bytes)
         self.player = player
@@ -18,8 +18,9 @@ class Upgrade_Brawler(BSMessageReader):
 
 
     def process(self):
-        self.player.Brawler_level[str(self.BrawlerID)] += 1
-        DataBase.replaceValue(self, 'brawlerPowerLevel', self.player.Brawler_level)
+        if self.player.Brawler_newTag[str(self.BrawlerID)] == 1:
+                self.player.Brawler_newTag[str(self.BrawlerID)] = 0
+                DataBase.replaceValue(self, 'brawlerNewTag', self.player.Brawler_newTag)
         
         #if self.player.Brawler_level[str(self.BrawlerID)] == 1:
          #   DataBase.replaceValue(self, 'gold', self.player.gold -20)
