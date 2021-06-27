@@ -4,7 +4,6 @@ from Utils.Config import Config
 
 packet_settings = Config.GetValue()
 
-
 class Writer:
     def __init__(self, client, endian: str = 'big'):
         self.client = client
@@ -16,10 +15,10 @@ class Writer:
 
     def writeUInteger(self, integer: int, length: int = 1):
         self.buffer += integer.to_bytes(length, self.endian, signed=False)
-
+    
     def writeArrayVint(self, data):
-        for x in data:
-            self.writeVint(x)
+    	for x in data:
+    		self.writeVint(x)
 
     def writeUInt8(self, integer: int):
         self.writeUInteger(integer)
@@ -52,7 +51,7 @@ class Writer:
             print(self.id, self.__class__.__name__)
 
     def sendToAll(self):
-        if self.player.club_low_id != 0:
+        if self.player.ClubID != 0:
             self.encode()
             packet = self.buffer
             self.buffer = self.id.to_bytes(2, 'big', signed=True)
@@ -65,30 +64,31 @@ class Writer:
             for Client in range(self.player.ClientDict["ClientCounts"]):
                 for client_id, value in self.player.ClientDict["Clients"].items():
                     DataBase.loadOtherAccount(self, int(client_id))
-                    if self.ClubID == self.player.club_low_id:
+                    if self.ClubID == self.player.ClubID:
                         self.player.ClientDict["Clients"][str(client_id)]["SocketInfo"].send(self.buffer)
                 break
             if packet_settings["ShowPacketsInLog"] == True:
                 print(self.id, self.__class__.__name__)
 
     def sendToOthers(self):
-        self.encode()
-        packet = self.buffer
-        self.buffer = self.id.to_bytes(2, 'big', signed=True)
-        self.writeInt(len(packet), 3)
-        if hasattr(self, 'version'):
-            self.writeInt16(self.version)
-        else:
-            self.writeInt16(0)
-        self.buffer += packet + b'\xff\xff\x00\x00\x00\x00\x00'
-        for Client in range(self.player.ClientDict["ClientCounts"]):
-            for client_id, value in self.player.ClientDict["Clients"].items():
-                DataBase.loadOtherAccount(self, int(client_id))
-                if client_id != self.player.low_id and self.ClubID == self.player.club_low_id:
-                    self.player.ClientDict["Clients"][str(client_id)]["SocketInfo"].send(self.buffer)
-            break
-        if packet_settings["ShowPacketsInLog"] == True:
-            print(self.id, self.__class__.__name__)
+        if self.player.ClubID != 0:
+            self.encode()
+            packet = self.buffer
+            self.buffer = self.id.to_bytes(2, 'big', signed=True)
+            self.writeInt(len(packet), 3)
+            if hasattr(self, 'version'):
+                self.writeInt16(self.version)
+            else:
+                self.writeInt16(0)
+            self.buffer += packet + b'\xff\xff\x00\x00\x00\x00\x00'
+            for Client in range(self.player.ClientDict["ClientCounts"]):
+                for client_id, value in self.player.ClientDict["Clients"].items():
+                    DataBase.loadOtherAccount(self, int(client_id))
+                    if client_id != self.player.LowID and self.ClubID == self.player.ClubID:
+                        self.player.ClientDict["Clients"][str(client_id)]["SocketInfo"].send(self.buffer)
+                break
+            if packet_settings["ShowPacketsInLog"] == True:
+                print(self.id, self.__class__.__name__)
 
     def sendWithLowID(self, low_id):
         try:
@@ -109,6 +109,8 @@ class Writer:
 
         if packet_settings["ShowPacketsInLog"] == True:
             print(self.id, self.__class__.__name__)
+
+        
 
     def writeVint(self, data, rotate: bool = True):
         final = b''
@@ -135,7 +137,7 @@ class Writer:
 
     def writeString(self, string: str = None):
         if string is None:
-            self.writeInt((2 ** 32) - 1)
+            self.writeInt((2**32)-1)
         else:
             encoded = string.encode('utf-8')
             self.writeInt(len(encoded))
