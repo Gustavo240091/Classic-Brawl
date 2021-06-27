@@ -2,7 +2,7 @@ from Utils.Writer import Writer
 from Database.DatabaseManager import DataBase
 
 
-class BattleResultMessage(Writer):
+class BattleResultBigGameMessage(Writer):
 
     def __init__(self, client, player):
         super().__init__(client)
@@ -18,128 +18,32 @@ class BattleResultMessage(Writer):
         else:
             brawler_level = self.player.Brawler_level[str(self.player.brawler_id)] + 1
         # Rewards
-        if self.player.tutorial <= 1:
-            exp_reward = [0, 0, 0]
-            token_list = [0, 0, 0]
-            practice_exp_reward = [0, 0, 0] 
-            practice_token_list = [0, 0, 0]
-            mvp_exp_reward = [0, 0]
-        else:
-            exp_reward = [8, 6, 4]
-            token_list = [20, 15, 10]
-            practice_exp_reward = [4, 3, 2]
-            practice_token_list = [10, 8, 5]
-            mvp_exp_reward = [10]
-        # Trophy Balance
-        if 0 <= brawler_trophies <= 49:
-            win_val = 8
-            lose_val = 0
-        else:
-            if 50 <= brawler_trophies <= 99:
-                win_val = 8
-                lose_val = -1
-            if 100 <= brawler_trophies <= 199:
-                win_val = 8
-                lose_val = -2
-            if 200 <= brawler_trophies <= 299:
-                win_val = 8
-                lose_val = -3
-            if 300 <= brawler_trophies <= 399:
-                win_val = 8
-                lose_val = -4
-            if 400 <= brawler_trophies <= 499:
-                win_val = 8
-                lose_val = -5
-            if 500 <= brawler_trophies <= 599:
-                win_val = 8
-                lose_val = -6
-            if 600 <= brawler_trophies <= 699:
-                win_val = 8
-                lose_val = -7
-            if 700 <= brawler_trophies <= 799:
-                win_val = 8
-                lose_val = -8
-            if 800 <= brawler_trophies <= 899:
-                win_val = 7
-                lose_val = -9
-            if 900 <= brawler_trophies <= 999:
-                win_val = 6
-                lose_val = -10
-            if 1000 <= brawler_trophies <= 1099:
-                win_val = 5
-                lose_val = -11
-            if 1100 <= brawler_trophies <= 1199:
-                win_val = 4
-                lose_val = -12
-            if brawler_trophies >= 1200:
-                win_val = 3
-                lose_val = -12
+        exp_reward = [0]
+        token_list = [0]
+        mvp_exp_reward = [10]    
         # Result Rewards
-        if self.player.result == 0:
-            if self.player.battle_tokens <= 0 and self.player.collected_experience >= self.player.maximum_experience:
-                result = self.player.result + 6
-            elif self.player.battle_tokens <= 0:
-                result = self.player.result + 4
-            elif self.player.collected_experience >= self.player.maximum_experience:
-                result = self.player.result + 2
-            else:
-                result = self.player.result
-            gainedtrophies = 0
-            if self.player.battle_result == 0:
-                gainedtokens = practice_token_list[0]
-                gainedexperience = practice_exp_reward[0]
-                self.player.ThreeVSThree_wins += 1
-                DataBase.replaceValue(self, '3vs3Wins', self.player.ThreeVSThree_wins)
-            if self.player.battle_result == 1:
-                gainedtokens = practice_token_list[2]
-                gainedexperience = practice_exp_reward[2]
-            if self.player.battle_result == 2:
-                gainedtokens = practice_token_list[1]
-                gainedexperience = practice_exp_reward[1]
+        if self.player.battle_tokens <= 0 and self.player.collected_experience >= self.player.maximum_experience:
+            result = 7
+        elif self.player.battle_tokens <= 0:
+            result = 5
+        elif self.player.collected_experience >= self.player.maximum_experience:
+            result = 3
         else:
-            if self.player.battle_result == 0:
-                if self.player.battle_tokens <= 0 and self.player.collected_experience >= self.player.maximum_experience:
-                    result = self.player.result + 7
-                elif self.player.battle_tokens <= 0:
-                    result = self.player.result + 5
-                elif self.player.collected_experience >= self.player.maximum_experience:
-                    result = self.player.result + 3
-                else:
-                    result = self.player.result + 1
-                gainedtokens = token_list[0]
-                gainedexperience = exp_reward[0]
-                gainedtrophies = win_val
-                self.player.ThreeVSThree_wins += 1
-                DataBase.replaceValue(self, '3vs3Wins', self.player.ThreeVSThree_wins)
-
-            if self.player.battle_result in [1, 2]:
-                if self.player.battle_tokens <= 0 and self.player.collected_experience >= self.player.maximum_experience:
-                    result = self.player.result + 6
-                elif self.player.battle_tokens <= 0:
-                    result = self.player.result + 4
-                elif self.player.collected_experience >= self.player.maximum_experience:
-                    result = self.player.result + 2
-                else:
-                    result = self.player.result
-                if self.player.battle_result == 1:
-                    gainedtokens = token_list[2]
-                    gainedexperience = exp_reward[2]
-                    gainedtrophies = lose_val
-                if self.player.battle_result == 2:
-                    gainedtokens = token_list[1]
-                    gainedexperience = exp_reward[1]
-                    gainedtrophies = 0
+            result = 1
+        if self.player.battle_result == 0:
+            gainedtokens = token_list[0]
+            gainedexperience = exp_reward[0]
+        if self.player.battle_result == 1:
+            gainedtokens = token_list[0]
+            gainedexperience = exp_reward[0]
+        if self.player.battle_result == 2:
+            gainedtokens = token_list[0]
+            gainedexperience = exp_reward[0]
                 
-        if self.player.battle_result in [0, 2]:
-            if 0 <= result <= 15:
-                starplayer = 1
-            else:
-                starplayer = 5
+        if 0 <= result <= 15:
+            starplayer = 1
         else:
-             if 0 <= result <= 15:
-                starplayer = 1
-             else:
-                starplayer = 1
+            starplayer = 5
         # Star Player Info
         if starplayer == 5:
             starplayerexperience = mvp_exp_reward[0]
@@ -161,7 +65,7 @@ class BattleResultMessage(Writer):
         if result in [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30]:
             startoken = 0
         if 0 <= result <= 31:
-            trophies = gainedtrophies
+            trophies = 0
         # DataBase Stuff            
         self.player.player_experience += experience + mvpexperience
         self.player.collected_experience += experience + mvpexperience
@@ -210,16 +114,10 @@ class BattleResultMessage(Writer):
             DataBase.replaceValue(self, 'cappedExp', self.player.collected_experience)
             DataBase.replaceValue(self, 'gold', new_gold)
         
-        self.writeVint(1) # Battle End Game Mode 
+        self.writeVint(4) # Battle End Game Mode 
         self.writeVint(self.player.battle_result) # Result 
         self.writeVint(token) # Tokens Gained
-        if self.player.result < 16:
-            self.writeVint(0) # Trophies Result 
-        if self.player.result >= 16:
-            if gainedtrophies >= 0:
-                self.writeVint(gainedtrophies) # Trophies Result
-            if gainedtrophies < 0:
-                self.writeVint(-65 - (gainedtrophies)) # Trophies Result
+        self.writeVint(0) # Trophies Result
         self.writeVint(0) # Unknown (Power Play Related)
         self.writeVint(doubledtokens) # Doubled Tokens
         self.writeVint(tokenevent) # Double Token Event
@@ -405,12 +303,10 @@ class BattleResultMessage(Writer):
         else:
             self.writeBoolean(False)  # Play Again
             
-        if self.player.battle_result == 0:
+        if self.player.battle_result in [0, 2]:
             if self.player.tutorial <= 1:
                 self.player.tutorial += 1
                 DataBase.replaceValue(self, 'tutorial', self.player.tutorial)
-                self.player.ThreeVSThree_wins -= 1
-                DataBase.replaceValue(self, '3vs3Wins', self.player.ThreeVSThree_wins)
             else: 
                 self.player.tutorial = 0
       

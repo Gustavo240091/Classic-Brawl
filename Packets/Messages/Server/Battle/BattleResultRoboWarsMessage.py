@@ -2,7 +2,7 @@ from Utils.Writer import Writer
 from Database.DatabaseManager import DataBase
 
 
-class BattleResultMessage(Writer):
+class BattleResultRoboWarsMessage(Writer):
 
     def __init__(self, client, player):
         super().__init__(client)
@@ -25,55 +25,55 @@ class BattleResultMessage(Writer):
             practice_token_list = [0, 0, 0]
             mvp_exp_reward = [0, 0]
         else:
-            exp_reward = [8, 6, 4]
-            token_list = [20, 15, 10]
-            practice_exp_reward = [4, 3, 2]
-            practice_token_list = [10, 8, 5]
+            exp_reward = [16, 12, 8]
+            token_list = [40, 30, 20]
+            practice_exp_reward = [8, 6, 4]
+            practice_token_list = [20, 15, 10]
             mvp_exp_reward = [10]
         # Trophy Balance
         if 0 <= brawler_trophies <= 49:
-            win_val = 8
+            win_val = 16
             lose_val = 0
         else:
             if 50 <= brawler_trophies <= 99:
-                win_val = 8
-                lose_val = -1
-            if 100 <= brawler_trophies <= 199:
-                win_val = 8
+                win_val = 16
                 lose_val = -2
-            if 200 <= brawler_trophies <= 299:
-                win_val = 8
-                lose_val = -3
-            if 300 <= brawler_trophies <= 399:
-                win_val = 8
+            if 100 <= brawler_trophies <= 199:
+                win_val = 16
                 lose_val = -4
-            if 400 <= brawler_trophies <= 499:
-                win_val = 8
-                lose_val = -5
-            if 500 <= brawler_trophies <= 599:
-                win_val = 8
+            if 200 <= brawler_trophies <= 299:
+                win_val = 16
                 lose_val = -6
-            if 600 <= brawler_trophies <= 699:
-                win_val = 8
-                lose_val = -7
-            if 700 <= brawler_trophies <= 799:
-                win_val = 8
+            if 300 <= brawler_trophies <= 399:
+                win_val = 16
                 lose_val = -8
-            if 800 <= brawler_trophies <= 899:
-                win_val = 7
-                lose_val = -9
-            if 900 <= brawler_trophies <= 999:
-                win_val = 6
+            if 400 <= brawler_trophies <= 499:
+                win_val = 16
                 lose_val = -10
+            if 500 <= brawler_trophies <= 599:
+                win_val = 16
+                lose_val = -12
+            if 600 <= brawler_trophies <= 699:
+                win_val = 16
+                lose_val = -14
+            if 700 <= brawler_trophies <= 799:
+                win_val = 16
+                lose_val = -16
+            if 800 <= brawler_trophies <= 899:
+                win_val = 14
+                lose_val = -18
+            if 900 <= brawler_trophies <= 999:
+                win_val = 12
+                lose_val = -20
             if 1000 <= brawler_trophies <= 1099:
-                win_val = 5
-                lose_val = -11
+                win_val = 10
+                lose_val = -22
             if 1100 <= brawler_trophies <= 1199:
-                win_val = 4
-                lose_val = -12
+                win_val = 8
+                lose_val = -24
             if brawler_trophies >= 1200:
-                win_val = 3
-                lose_val = -12
+                win_val = 6
+                lose_val = -24
         # Result Rewards
         if self.player.result == 0:
             if self.player.battle_tokens <= 0 and self.player.collected_experience >= self.player.maximum_experience:

@@ -2,7 +2,7 @@ from Utils.Writer import Writer
 from Database.DatabaseManager import DataBase
 
 
-class BattleResultMessage(Writer):
+class BattleResultDuoShowdownMessage(Writer):
 
     def __init__(self, client, player):
         super().__init__(client)
@@ -19,62 +19,104 @@ class BattleResultMessage(Writer):
             brawler_level = self.player.Brawler_level[str(self.player.brawler_id)] + 1
         # Rewards
         if self.player.tutorial <= 1:
-            exp_reward = [0, 0, 0]
-            token_list = [0, 0, 0]
-            practice_exp_reward = [0, 0, 0] 
-            practice_token_list = [0, 0, 0]
-            mvp_exp_reward = [0, 0]
+            exp_reward = [0, 0, 0, 0, 0]
+            token_list = [0, 0, 0, 0, 0]
+            practice_exp_reward = [0, 0, 0, 0, 0]
+            practice_token_list = [0, 0, 0, 0, 0]
+            mvp_exp_reward = [0]
         else:
-            exp_reward = [8, 6, 4]
-            token_list = [20, 15, 10]
-            practice_exp_reward = [4, 3, 2]
-            practice_token_list = [10, 8, 5]
+            exp_reward = [14, 8, 4, 2, 0]
+            token_list = [32, 20, 8, 4, 0]
+            practice_exp_reward = [7, 4, 2, 1, 0] 
+            practice_token_list = [16, 10, 4, 2, 0] 
             mvp_exp_reward = [10]
         # Trophy Balance
         if 0 <= brawler_trophies <= 49:
-            win_val = 8
-            lose_val = 0
+            rank_1_val = 9
+            rank_2_val = 7
+            rank_3_val = 4
+            rank_4_val = 0
+            rank_5_val = 0
         else:
             if 50 <= brawler_trophies <= 99:
-                win_val = 8
-                lose_val = -1
+                rank_1_val = 9
+                rank_2_val = 7
+                rank_3_val = 4
+                rank_4_val = 0
+                rank_5_val = -1
             if 100 <= brawler_trophies <= 199:
-                win_val = 8
-                lose_val = -2
+                rank_1_val = 9
+                rank_2_val = 7
+                rank_3_val = 3
+                rank_4_val = -1
+                rank_5_val = -2
             if 200 <= brawler_trophies <= 299:
-                win_val = 8
-                lose_val = -3
+                rank_1_val = 9
+                rank_2_val = 7
+                rank_3_val = 2
+                rank_4_val = -2
+                rank_5_val = -3
             if 300 <= brawler_trophies <= 399:
-                win_val = 8
-                lose_val = -4
+                rank_1_val = 9
+                rank_2_val = 7
+                rank_3_val = 1
+                rank_4_val = -3
+                rank_5_val = -4
             if 400 <= brawler_trophies <= 499:
-                win_val = 8
-                lose_val = -5
+                rank_1_val = 9
+                rank_2_val = 7
+                rank_3_val = 0
+                rank_4_val = -4
+                rank_5_val = -5
             if 500 <= brawler_trophies <= 599:
-                win_val = 8
-                lose_val = -6
+                rank_1_val = 9
+                rank_2_val = 7
+                rank_3_val = 0
+                rank_4_val = -5
+                rank_5_val = -6
             if 600 <= brawler_trophies <= 699:
-                win_val = 8
-                lose_val = -7
+                rank_1_val = 9
+                rank_2_val = 7
+                rank_3_val = 0
+                rank_4_val = -6
+                rank_5_val = -8
             if 700 <= brawler_trophies <= 799:
-                win_val = 8
-                lose_val = -8
+                rank_1_val = 9
+                rank_2_val = 7
+                rank_3_val = 0
+                rank_4_val = -7
+                rank_5_val = -9
             if 800 <= brawler_trophies <= 899:
-                win_val = 7
-                lose_val = -9
+                rank_1_val = 7
+                rank_2_val = 6
+                rank_3_val = -1
+                rank_4_val = -8
+                rank_5_val = -9
             if 900 <= brawler_trophies <= 999:
-                win_val = 6
-                lose_val = -10
+                rank_1_val = 7
+                rank_2_val = 6
+                rank_3_val = -3
+                rank_4_val = -8
+                rank_5_val = -10
             if 1000 <= brawler_trophies <= 1099:
-                win_val = 5
-                lose_val = -11
+                rank_1_val = 5
+                rank_2_val = 4
+                rank_3_val = -4
+                rank_4_val = -9
+                rank_5_val = -11
             if 1100 <= brawler_trophies <= 1199:
-                win_val = 4
-                lose_val = -12
+                rank_1_val = 5
+                rank_2_val = 4
+                rank_3_val = -6
+                rank_4_val = -10
+                rank_5_val = -12
             if brawler_trophies >= 1200:
-                win_val = 3
-                lose_val = -12
-        # Result Rewards
+                rank_1_val = 4
+                rank_2_val = 2
+                rank_3_val = -6
+                rank_4_val = -10
+                rank_5_val = -12
+        # Result Rewards 
         if self.player.result == 0:
             if self.player.battle_tokens <= 0 and self.player.collected_experience >= self.player.maximum_experience:
                 result = self.player.result + 6
@@ -85,19 +127,25 @@ class BattleResultMessage(Writer):
             else:
                 result = self.player.result
             gainedtrophies = 0
-            if self.player.battle_result == 0:
+            if self.player.rank == 1:
                 gainedtokens = practice_token_list[0]
                 gainedexperience = practice_exp_reward[0]
-                self.player.ThreeVSThree_wins += 1
-                DataBase.replaceValue(self, '3vs3Wins', self.player.ThreeVSThree_wins)
-            if self.player.battle_result == 1:
-                gainedtokens = practice_token_list[2]
-                gainedexperience = practice_exp_reward[2]
-            if self.player.battle_result == 2:
+                self.player.duo_wins += 1
+                DataBase.replaceValue(self, 'duoWins', self.player.duo_wins)
+            if self.player.rank == 2:
                 gainedtokens = practice_token_list[1]
                 gainedexperience = practice_exp_reward[1]
+            if self.player.rank == 3:
+                gainedtokens = practice_token_list[2]
+                gainedexperience = practice_exp_reward[2]
+            if self.player.rank == 4:
+                gainedtokens = practice_token_list[3]
+                gainedexperience = practice_exp_reward[3]
+            if self.player.rank == 5:
+                gainedtokens = practice_token_list[4]
+                gainedexperience = practice_exp_reward[4]
         else:
-            if self.player.battle_result == 0:
+            if self.player.rank in [1, 2]:
                 if self.player.battle_tokens <= 0 and self.player.collected_experience >= self.player.maximum_experience:
                     result = self.player.result + 7
                 elif self.player.battle_tokens <= 0:
@@ -106,13 +154,7 @@ class BattleResultMessage(Writer):
                     result = self.player.result + 3
                 else:
                     result = self.player.result + 1
-                gainedtokens = token_list[0]
-                gainedexperience = exp_reward[0]
-                gainedtrophies = win_val
-                self.player.ThreeVSThree_wins += 1
-                DataBase.replaceValue(self, '3vs3Wins', self.player.ThreeVSThree_wins)
-
-            if self.player.battle_result in [1, 2]:
+            else:
                 if self.player.battle_tokens <= 0 and self.player.collected_experience >= self.player.maximum_experience:
                     result = self.player.result + 6
                 elif self.player.battle_tokens <= 0:
@@ -121,25 +163,33 @@ class BattleResultMessage(Writer):
                     result = self.player.result + 2
                 else:
                     result = self.player.result
-                if self.player.battle_result == 1:
-                    gainedtokens = token_list[2]
-                    gainedexperience = exp_reward[2]
-                    gainedtrophies = lose_val
-                if self.player.battle_result == 2:
-                    gainedtokens = token_list[1]
-                    gainedexperience = exp_reward[1]
-                    gainedtrophies = 0
+            if self.player.rank == 1:
+                gainedtokens = token_list[0]
+                gainedexperience = exp_reward[0]
+                gainedtrophies = rank_1_val
+                self.player.duo_wins += 1
+                DataBase.replaceValue(self, 'duoWins', self.player.duo_wins)
+            if self.player.rank == 2:
+                gainedtokens = token_list[1]
+                gainedexperience = exp_reward[1]
+                gainedtrophies = rank_2_val
+            if self.player.rank == 3:
+                gainedtokens = token_list[2]
+                gainedexperience = exp_reward[2]
+                gainedtrophies = rank_3_val
+            if self.player.rank == 4:
+                gainedtokens = token_list[3]
+                gainedexperience = exp_reward[3]
+                gainedtrophies = rank_4_val
+            if self.player.rank == 5:
+                gainedtokens = token_list[4]
+                gainedexperience = exp_reward[4]
+                gainedtrophies = rank_5_val
                 
-        if self.player.battle_result in [0, 2]:
-            if 0 <= result <= 15:
-                starplayer = 1
-            else:
-                starplayer = 5
+        if 0 <= result <= 15:
+            starplayer = 1
         else:
-             if 0 <= result <= 15:
-                starplayer = 1
-             else:
-                starplayer = 1
+            starplayer = 1
         # Star Player Info
         if starplayer == 5:
             starplayerexperience = mvp_exp_reward[0]
@@ -209,9 +259,9 @@ class BattleResultMessage(Writer):
             DataBase.replaceValue(self, 'playerExp', self.player.player_experience)
             DataBase.replaceValue(self, 'cappedExp', self.player.collected_experience)
             DataBase.replaceValue(self, 'gold', new_gold)
-        
-        self.writeVint(1) # Battle End Game Mode 
-        self.writeVint(self.player.battle_result) # Result 
+            
+        self.writeVint(5) # Battle End Game Mode 
+        self.writeVint(self.player.rank) # Result 
         self.writeVint(token) # Tokens Gained
         if self.player.result < 16:
             self.writeVint(0) # Trophies Result 
@@ -239,7 +289,7 @@ class BattleResultMessage(Writer):
             self.writeVint(result) # Battle Result Type
         self.writeVint(-64) # Championship Challenge Type
         self.writeVint(0) # Championship Cleared and Beta Quests
-            
+        
         # Players Array
         self.writeVint(self.player.players) # Battle End Screen Players
         
@@ -256,20 +306,14 @@ class BattleResultMessage(Writer):
         self.writeInt(self.player.high_id) # HighID
         self.writeInt(self.player.low_id) # LowID
         self.writeString(self.player.name) # Your Name
-        self.writeVint(self.player.player_experience -experience -mvpexperience) # Player Experience Level
+        self.writeVint(self.player.player_experience) # Player Experience Level
         self.writeVint(28000000 + self.player.profile_icon) # Player Profile Icon
         self.writeVint(43000000 + self.player.name_color) # Player Name Color
             
-        if self.player.team == 0:
-            if self.player.bot1_team == 0:
-                self.writeVint(0) # Team and Star Player Type
-            else:
-                self.writeVint(2) # Team and Star Player Type
+        if self.player.bot1_team == 0:
+            self.writeVint(0) # Team and Star Player Type
         else:
-            if self.player.bot1_team == 0:
-                self.writeVint(2) # Team and Star Player Type
-            else:
-                self.writeVint(0) # Team and Star Player Type
+            self.writeVint(2) # Team and Star Player Type
         self.writeScId(16, self.player.bot1) # Bot 1 Brawler
         self.writeVint(0) # Bot 1 Skin
         self.writeVint(0) # Brawler Trophies
@@ -284,16 +328,10 @@ class BattleResultMessage(Writer):
         self.writeVint(28000000) # Player Profile Icon
         self.writeVint(43000000) # Player Name Color
             
-        if self.player.team == 0:
-            if self.player.bot2_team == 0:
-                self.writeVint(0) # Team and Star Player Type
-            else:
-                self.writeVint(2) # Team and Star Player Type
+        if self.player.bot2_team == 0:
+            self.writeVint(0) # Team and Star Player Type
         else:
-            if self.player.bot2_team == 0:
-                self.writeVint(2) # Team and Star Player Type
-            else:
-                self.writeVint(0) # Team and Star Player Type
+            self.writeVint(2) # Team and Star Player Type
         self.writeScId(16, self.player.bot2) # Bot 2 Brawler
         self.writeVint(0) # Bot 2 Skin
         self.writeVint(0) # Brawler Trophies
@@ -308,16 +346,10 @@ class BattleResultMessage(Writer):
         self.writeVint(28000000) # Player Profile Icon
         self.writeVint(43000000) # Player Name Color
 
-        if self.player.team == 0:
-            if self.player.bot3_team == 0:
-                self.writeVint(0) # Team and Star Player Type
-            else:
-                self.writeVint(2) # Team and Star Player Type
+        if self.player.bot3_team == 0:
+            self.writeVint(0) # Team and Star Player Type
         else:
-            if self.player.bot3_team == 0:
-                self.writeVint(2) # Team and Star Player Type
-            else:
-                self.writeVint(0) # Team and Star Player Type
+            self.writeVint(2) # Team and Star Player Type
         self.writeScId(16, self.player.bot3) # Bot 3 Brawler
         self.writeVint(0) # Bot 3 Skin
         self.writeVint(0) # Brawler Trophies
@@ -332,16 +364,10 @@ class BattleResultMessage(Writer):
         self.writeVint(28000000) # Player Profile Icon
         self.writeVint(43000000) # Player Name Color
 
-        if self.player.team == 0:
-            if self.player.bot4_team == 0:
-                self.writeVint(0) # Team and Star Player Type
-            else:
-                self.writeVint(2) # Team and Star Player Type
+        if self.player.bot4_team == 0:
+            self.writeVint(0) # Team and Star Player Type
         else:
-            if self.player.bot4_team == 0:
-                self.writeVint(2) # Team and Star Player Type
-            else:
-                self.writeVint(0) # Team and Star Player Type
+            self.writeVint(2) # Team and Star Player Type
         self.writeScId(16, self.player.bot4) # Bot 4 Brawler
         self.writeVint(0) # Bot 4 Skin
         self.writeVint(0) # Brawler Trophies
@@ -356,16 +382,10 @@ class BattleResultMessage(Writer):
         self.writeVint(28000000) # Player Profile Icon
         self.writeVint(43000000) # Player Name Color
 
-        if self.player.team == 0:
-            if self.player.bot5_team == 0:
-                self.writeVint(0) # Team and Star Player Type
-            else:
-                self.writeVint(2) # Team and Star Player Type
+        if self.player.bot5_team == 0:
+            self.writeVint(0) # Team and Star Player Type
         else:
-            if self.player.bot5_team == 0:
-                self.writeVint(2) # Team and Star Player Type
-            else:
-                self.writeVint(0) # Team and Star Player Type
+            self.writeVint(2) # Team and Star Player Type
         self.writeScId(16, self.player.bot5) # Bot 5 Brawler
         self.writeVint(0) # Bot 5 Skin
         self.writeVint(0) # Brawler Trophies
@@ -376,6 +396,78 @@ class BattleResultMessage(Writer):
             self.writeVint(10) # Brawler Power Level
         self.writeBoolean(False) # HighID and LowID Array
         self.writeString(self.player.bot5_n) # Bot 5 Name
+        self.writeVint(0) # Player Experience Level
+        self.writeVint(28000000) # Player Profile Icon
+        self.writeVint(43000000) # Player Name Color
+        
+        if self.player.bot6_team == 0:
+            self.writeVint(0) # Team and Star Player Type
+        else:
+            self.writeVint(2) # Team and Star Player Type
+        self.writeScId(16, self.player.bot6) # Bot 6 Brawler
+        self.writeVint(0) # Bot 6 Skin
+        self.writeVint(0) # Brawler Trophies
+        self.writeVint(0) # Unknown (Power Play Related)
+        if self.player.tutorial <= 1:
+            self.writeVint(1) # Brawler Power Level
+        else:
+            self.writeVint(10) # Brawler Power Level
+        self.writeBoolean(False) # HighID and LowID Array
+        self.writeString(self.player.bot6_n) # Bot 6 Name
+        self.writeVint(0) # Player Experience Level
+        self.writeVint(28000000) # Player Profile Icon
+        self.writeVint(43000000) # Player Name Color
+            
+        if self.player.bot7_team == 0:
+            self.writeVint(0) # Team and Star Player Type
+        else:
+            self.writeVint(2) # Team and Star Player Type
+        self.writeScId(16, self.player.bot7) # Bot 7 Brawler
+        self.writeVint(0) # Bot 7 Skin
+        self.writeVint(0) # Brawler Trophies
+        self.writeVint(0) # Unknown (Power Play Related)
+        if self.player.tutorial <= 1:
+            self.writeVint(1) # Brawler Power Level
+        else:
+            self.writeVint(10) # Brawler Power Level
+        self.writeBoolean(False) # HighID and LowID Array
+        self.writeString(self.player.bot7_n) # Bot 7 Name
+        self.writeVint(0) # Player Experience Level
+        self.writeVint(28000000) # Player Profile Icon
+        self.writeVint(43000000) # Player Name Color
+
+        if self.player.bot8_team == 0:
+            self.writeVint(0) # Team and Star Player Type
+        else:
+            self.writeVint(2) # Team and Star Player Type
+        self.writeScId(16, self.player.bot8) # Bot 8 Brawler
+        self.writeVint(0) # Bot 8 Skin
+        self.writeVint(0) # Brawler Trophies
+        self.writeVint(0) # Unknown (Power Play Related)
+        if self.player.tutorial <= 1:
+            self.writeVint(1) # Brawler Power Level
+        else:
+            self.writeVint(10) # Brawler Power Level
+        self.writeBoolean(False) # HighID and LowID Array
+        self.writeString(self.player.bot8_n) # Bot 8 Name
+        self.writeVint(0) # Player Experience Level
+        self.writeVint(28000000) # Player Profile Icon
+        self.writeVint(43000000) # Player Name Color
+
+        if self.player.bot9_team == 0:
+            self.writeVint(0) # Team and Star Player Type
+        else:
+            self.writeVint(2) # Team and Star Player Type
+        self.writeScId(16, self.player.bot9) # Bot 9 Brawler
+        self.writeVint(0) # Bot 9 Skin
+        self.writeVint(0) # Brawler Trophies
+        self.writeVint(0) # Unknown (Power Play Related)
+        if self.player.tutorial <= 1:
+            self.writeVint(1) # Brawler Power Level
+        else:
+            self.writeVint(10) # Brawler Power Level
+        self.writeBoolean(False) # HighID and LowID Array
+        self.writeString(self.player.bot9_n) # Bot 9 Name
         self.writeVint(0) # Player Experience Level
         self.writeVint(28000000) # Player Profile Icon
         self.writeVint(43000000) # Player Name Color
@@ -405,12 +497,11 @@ class BattleResultMessage(Writer):
         else:
             self.writeBoolean(False)  # Play Again
             
-        if self.player.battle_result == 0:
+        if self.player.rank == 1:
             if self.player.tutorial <= 1:
                 self.player.tutorial += 1
                 DataBase.replaceValue(self, 'tutorial', self.player.tutorial)
-                self.player.ThreeVSThree_wins -= 1
-                DataBase.replaceValue(self, '3vs3Wins', self.player.ThreeVSThree_wins)
+                self.player.duo_wins -= 1
+                DataBase.replaceValue(self, 'duoWins', self.player.duo_wins)
             else: 
                 self.player.tutorial = 0
-      
