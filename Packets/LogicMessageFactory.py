@@ -12,6 +12,7 @@ from Packets.Messages.Client.Battle.AskForBattleEndMessage import AskForBattleEn
 from Packets.Messages.Client.SetNameMessage import SetNameMessage
 from Packets.Messages.Client.Home.GetLeaderboardMessage import GetLeaderboardMessage
 from Packets.Messages.Client.Home.AvatarNameCheckRequestMessage import AvatarNameCheckRequestMessage
+from Packets.Messages.Client.Home.SetSupportedCreatorMessage import SetSupportedCreatorMessage
 from Packets.Messages.Client.Gameroom.TeamUseGadgetMessage import TeamUseGadgetMessage
 from Packets.Messages.Client.Gameroom.Do_Not_Distrub_Message import DoNotDistrubMessage
 from Packets.Messages.Client.Gameroom.TeamSetRankedLocationMessage import TeamSetRankedLocationMessage
@@ -23,6 +24,8 @@ from Packets.Messages.Client.Battle.OnPlay import OnPlay
 from Packets.Messages.Client.Battle.CancelMatchmaking import CancelMatchMaking
 from Packets.Messages.Client.Battle.PlayAgainMessage import PlayAgainMessage
 from Packets.Messages.Client.Battle.HomeBattleReplayMessage import HomeBattleReplayMessage
+#from Packets.Messages.Server.Battle.StartLoadingMessage import StartLoadingMessage
+#from Packets.Messages.Server.Battle.VisionUpdateMessage import VisionUpdateMessage
 
 # Alliances
 from Packets.Messages.Client.Alliance.Create_Message import Create_Message
@@ -33,6 +36,7 @@ from Packets.Messages.Client.Alliance.Promote_Alliance_Member_Message import Pro
 from Packets.Messages.Client.Alliance.Leave_Message import Leave_Message
 from Packets.Messages.Client.Alliance.Alliance_Chat_Message import AllianceChatMessage
 from Packets.Messages.Client.Alliance.Edit_Settings_Message import Edit_Settings_Message
+#from Packets.Messages.Server.AllianceWarMessage import AllianceWarMessage
 # Join request
 # Accept or decline request
 # Invite member
@@ -60,16 +64,20 @@ packets = {
     14103: OnPlay,
     14106: CancelMatchMaking,
     14109: GoHomeFromOfflinePractiseMessage,
+    #20559: StartLoadingMessage,
+    #24109: VisionUpdateMessage,
     14110: AskForBattleEndMessage,
     14113: AskProfileMessage,
     14114: HomeBattleReplayMessage,
     14177: PlayAgainMessage,
     14201: FacebookConnect,
     14211: UnlinkFacebookAcount,
+    18686: SetSupportedCreatorMessage,
 
     # Alliance
     14301: Create_Message,
     14302: AskForAllianceDataMessage,
+    #24776: AllianceWarMessage,
     14303: Ask_Joinable_Alliances_Message,
     # 14304: Ask_Stream_Message,
     14305: Join_Message,
