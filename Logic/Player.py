@@ -113,8 +113,9 @@ class Players:
 	tickets = settings['Tickets']
 	exp_points = settings['ExperiencePoints']
 	theme_id = 41000000 + settings['ThemeID']
+	content_creator_codes = settings['ContentCreatorCodes']
 	region = settings['Region']
-	content_creator = settings['SupportedContentCreator']
+	content_creator = ''
 	tokenevent = settings['DoubleTokenEvent']
 	coinevent = settings['CoinShowerEvent']
 
