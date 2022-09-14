@@ -76,4 +76,4 @@ class TeamGameroomDataMessage(Writer):
                 self.writeVint(2)
         else:
             print(self.player.room_id)
-            self.writeBoolean(False) # Club Wars Text ?
+            #self.writeBoolean(False) # Club Wars Text ? NOP!!!!!!!!!!!!!!!!!!!!
